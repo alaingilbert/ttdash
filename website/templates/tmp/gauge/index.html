@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html>
+<head>
+
+<script src="pornstar_min.js" type="text/javascript"></script>
+
+<style>
+html, body {
+}
+</style>
+</head>
+<body>
+
+<canvas id="gauge1" width="150" height="80"></canvas>
+<span id="text1">0</span>
+<br /><br />
+
+<canvas id="gauge2" width="150" height="80"></canvas>
+<span id="text2">0</span>
+
+<script type="text/javascript">
+   var g1 = new Gauge('gauge1');
+   g1.bind('text1');
+   g1.setValue(75);
+   setTimeout(function() { g1.setValue(20) }, 3000);
+
+   var g2 = new Gauge('gauge2', {'gaugeColor':'#ddd', 'needleColor':'#555'});
+   g2.bind('text2');
+   g2.max = 30;
+   g2.setValue(25);
+</script>
+
+</body>
+</html>
