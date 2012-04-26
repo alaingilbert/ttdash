@@ -9,7 +9,7 @@ from database import Database
 from callbacks import recv_room_info, recv_list_rooms, on_message
 from utils import log
 from datetime import datetime
-import re, cookielib, time, json, inspect, random
+import re, cookielib, time, json, inspect, random, urllib2
 
 
 class Bot(Thread):
@@ -62,14 +62,15 @@ class Bot(Thread):
       self.current_song = {'id':None, 'starttime':None, 'current_dj':None}
       self.cmds = []
 
-      CHATSERVER_ADDRS = [("chat2.turntable.fm", 80), ("chat3.turntable.fm", 80)]
-      if self.roomid != None:
-         HOST, PORT = CHATSERVER_ADDRS[self._hash_mod(self.roomid, len(CHATSERVER_ADDRS))]
+      dataStr = urllib2.urlopen('http://turntable.fm:80/api/room.which_chatserver?roomid=%s' % self.roomid).read()
+      data = json.loads(dataStr)
+      if data[0]:
+         HOST, PORT = data[1]['chatserver'][0], data[1]['chatserver'][1]
+         HOST = HOST.decode('iso-8859-1').encode('utf8')
+         self.ws = create_connection(HOST, PORT, '/socket.io/websocket', False)
+         self.ws.recv()
       else:
-         HOST, PORT = CHATSERVER_ADDRS[len(CHATSERVER_ADDRS)-1]
-
-      self.ws = create_connection(HOST, PORT, '/socket.io/websocket', False)
-      self.ws.recv()
+         log(self, 'LOGIN FAILED')
 
 
    def __str__(self):
